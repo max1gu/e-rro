@@ -4,8 +4,7 @@ Example of using Jkurwa library (DSTU4145) for getting information of E-RRO
 # Install
 You must install libraries:
 
-    npm install --save jkurwa gost89 encoding
-    npm install --save-dev @types/node
+    npm install
 
 Forder ./keyfop contains test public key and certificate.
 
