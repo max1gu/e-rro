@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ERRO = require("./e-rro");
+const encoding = require("encoding");
 ///-----------------------------------------------------------------------------
 var Colors;
 (function (Colors) {
@@ -40,14 +41,26 @@ var ProgState;
     ProgState[ProgState["viewDoc"] = 6] = "viewDoc";
 })(ProgState || (ProgState = {}));
 ;
+let brightZero = Colors.bright + "0" + Colors.reset;
+let brightHashs = Colors.bright + "##" + Colors.reset;
+let brightExit = Colors.bright + "exit" + Colors.reset;
 let greetings = [];
-greetings[ProgState.root] = "3:choose object; 4:chose registrator; 5:show current data; 6:get info; exit";
-greetings[ProgState.selectTaxObject] = "select object (0 - return)";
-greetings[ProgState.selectRegistrator] = "select registrator (0 - return)";
-greetings[ProgState.getInfo] = "1:RRO state; 2:Shifts; 3:Last shift data; exit";
-greetings[ProgState.shiftInfo] = "select shift; 0- back to info; exit";
-greetings[ProgState.listShiftDocuments] = "select document; 0 - go back; exit";
-greetings[ProgState.viewDoc] = "0 - back; exit";
+greetings[ProgState.root] =
+    Colors.bright + "3" + Colors.reset + ":choose object; " +
+        Colors.bright + "4" + Colors.reset + ":chose registrator; " +
+        Colors.bright + "5" + Colors.reset + ":show current data; " +
+        Colors.bright + "6" + Colors.reset + ":get info; " +
+        brightExit;
+greetings[ProgState.selectTaxObject] = "select object " + brightHashs + " (" + brightZero + " - return)";
+greetings[ProgState.selectRegistrator] = "select registrator " + brightHashs + " (" + brightZero + " - return)";
+greetings[ProgState.getInfo] =
+    Colors.bright + "1" + Colors.reset + ":RRO state; " +
+        Colors.bright + "2" + Colors.reset + ":Shifts; " +
+        Colors.bright + "3" + Colors.reset + ":Last shift data; " +
+        brightExit;
+greetings[ProgState.shiftInfo] = "select shift " + brightHashs + "; " + brightZero + " - back to info; " + brightExit;
+greetings[ProgState.listShiftDocuments] = "select document " + brightHashs + "; " + brightZero + " - go back; " + brightExit;
+greetings[ProgState.viewDoc] = brightZero + " - back; " + brightExit;
 class ConsoleProg {
     constructor() {
         this.state = ProgState.root;
@@ -86,10 +99,10 @@ class ConsoleProg {
                 break;
         }
     }
-    redirect(set) {
-        this.state = set.state;
-        this.showQuery = set.showQuery || true;
-        this.doCommand(set.command || "");
+    redirect(settings) {
+        this.state = settings.state;
+        this.showQuery = settings.showQuery || true;
+        this.doCommand(settings.command || "");
     }
     checkNumber(s, max) {
         let u = parseInt(s);
@@ -219,7 +232,7 @@ class ConsoleProg {
             this.greet();
         }
         else if (command == "2") {
-            await rs.getShiftsList(new Date(2020, 3, 1), new Date(2020, 3, 30));
+            await rs.getShiftsList(new Date(2020, 3, 1), new Date());
             this.redirect({ state: ProgState.shiftInfo, command: "-" });
         }
         else if (command == "3") {
@@ -238,17 +251,17 @@ class ConsoleProg {
         }
     }
     async doDocumentInfo(command) {
-        let u = this.proceedTable(command, { table: rs.documents, fields: ["NumFiscal", "NumLocal", "DocClass", "CheckDocType", "Revoked"] }, { state: ProgState.listShiftDocuments, command: "-" });
+        let u = this.proceedTable(command, { table: rs.documents, fields: ["NumFiscal", "NumLocal", "DocClass", "CheckDocType", "Revoked"] }, { state: ProgState.shiftInfo, command: "-" });
         if (u != 0) {
             await rs.setDocumentById(u - 1);
-            console.log(await rs.getDocInfo());
-            this.greet();
+            console.log(encoding.convert(await rs.getDocInfo(), 'CP866', 'WINDOWS-1251').toString());
+            this.redirect({ state: this.state, command: "-" });
         }
     }
 }
 //--------------------------------------
 let prog = new ConsoleProg();
-process.stdin.setEncoding('utf8');
+process.stdin.setEncoding('UTF-8');
 process.stdin.on('readable', () => {
     let chunk;
     // Use a loop to make sure we read all available data.

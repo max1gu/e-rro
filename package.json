@@ -1,7 +1,7 @@
 {
-  "name": "RRO",
+  "name": "E-RRO",
   "version": "1.0.0",
-  "description": "",
+  "description": "Test of jkurwa for getting information of E-RRO",
   "main": "rro-exampleCLI.js",
   "dependencies": {
     "encoding": "^0.1.12",

@@ -227,6 +227,7 @@ class ERROState {
         this.currentShift = null;
         this.documents = null;
         this.currentDocument = null;
+        this.subject = null;
     }
     setConnectionSettings(server, serverPort, path) {
         this.serverName = server;
