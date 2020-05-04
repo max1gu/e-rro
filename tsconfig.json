@@ -2,9 +2,7 @@
 	"compilerOptions": {
 		"module": "commonjs",
         "target": "es2017",
-        "lib":[],
     },
-	"compileOnSave":true,
 	"outdir":".",
 	"exclude": [
         "wwwroot",
